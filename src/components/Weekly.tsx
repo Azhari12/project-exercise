@@ -3,8 +3,18 @@ import { RxPencil1 } from "react-icons/rx";
 import { PiTrash } from "react-icons/pi";
 import { FC, useState } from "react";
 
-const BiWeekly: FC = () => {
-	const [data] = useState([1, 2, 3, 4, 5]);
+const Weekly: FC = () => {
+	const [data] = useState<string[]>([
+		"Tony",
+		"Jogn",
+		"Wick",
+		"Dog",
+		"Stark",
+		"John",
+		"Jarvis",
+		"Budi",
+	]);
+
 	const scheduleData = [
 		{
 			starTime: "7.30am",
@@ -39,6 +49,7 @@ const BiWeekly: FC = () => {
 			endTime: "3.25am",
 		},
 	];
+
 	return (
 		<div className=" text-black">
 			<div className="flex w-full justify-between items-center">
@@ -87,35 +98,11 @@ const BiWeekly: FC = () => {
 						})}
 					</div>
 				</div>
-				<div className=" w-full ml-3 max-h-[60vh] overflow-auto">
+				<div className=" w-full ml-3 ">
 					<table className=" table-fixed w-full border text-center max-h-[48vh] overflow-auto">
 						<thead className=" bg-[#f5fafe] ">
 							<tr className=" text-based">
 								<th className="border w-[11rem]">Employeess</th>
-								<th className="border">
-									<p>MON</p>
-									<p>1</p>
-								</th>
-								<th className="border">
-									<p>MON</p>
-									<p>1</p>
-								</th>
-								<th className="border">
-									<p>MON</p>
-									<p>1</p>
-								</th>
-								<th className="border">
-									<p>MON</p>
-									<p>1</p>
-								</th>
-								<th className="border">
-									<p>MON</p>
-									<p>1</p>
-								</th>
-								<th className="border">
-									<p>MON</p>
-									<p>1</p>
-								</th>
 								<th className="border">
 									<p>MON</p>
 									<p>1</p>
@@ -147,7 +134,7 @@ const BiWeekly: FC = () => {
 							</tr>
 						</thead>
 						<tbody>
-							{data.map((index) => {
+							{data.map((d, index) => {
 								return (
 									<tr>
 										<td className="flex justify-center items-center p-3 border">
@@ -155,19 +142,13 @@ const BiWeekly: FC = () => {
 												src="https://images.pexels.com/photos/5384445/pexels-photo-5384445.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
 												className=" w-10 h-10 rounded-full object-cover mr-3"
 											/>
-											<p>Tony</p>
+											<p>{d}</p>
 										</td>
-										{index == 1 ? (
+										{index == 0 ? (
 											<td className=" bg-[#f5fafe] border">7am-3pm</td>
 										) : (
 											<td className=" text-xl border">+</td>
 										)}
-										<td className=" text-xl border">+</td>
-										<td className=" text-xl border">+</td>
-										<td className=" text-xl border">+</td>
-										<td className=" text-xl border">+</td>
-										<td className=" text-xl border">+</td>
-										<td className=" text-xl border">+</td>
 										<td className=" text-xl border">+</td>
 										<td className=" text-xl border">+</td>
 										<td className=" text-xl border">+</td>
@@ -185,4 +166,4 @@ const BiWeekly: FC = () => {
 	);
 };
 
-export default BiWeekly;
+export default Weekly;

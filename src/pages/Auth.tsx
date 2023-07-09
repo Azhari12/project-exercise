@@ -1,14 +1,16 @@
-import { Input } from "@/components/Input";
-import { FC, useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import { FC, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { z } from "zod";
+
+import Business from "@/utils/types/Business";
 import Location from "@/utils/types/Location";
 import { Select } from "@/components/Select";
-import Business from "@/utils/types/Business";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Input } from "@/components/Input";
 
 const schmaLogin = z.object({
 	email: z
@@ -20,27 +22,32 @@ const schmaLogin = z.object({
 		.min(6, { message: "Password is Required and have minimum 6 character" }),
 });
 
-const schemaRegister = z.object({
-	name: z.string().min(5, { message: "Name is required" }),
-	email: z
-		.string()
-		.min(5, { message: "Users ID is required" })
-		.email({ message: "Invalid email address" }),
-	password: z
-		.string()
-		.min(6, { message: "Password is Required and have minimum 6 character" }),
-	password_confirmation: z.string().min(6, {
-		message: "Confirm Password is Required and have minimum 6 character",
-	}),
-	company_name: z.string().min(1, { message: "Company Name is required" }),
-	company_location: z
-		.number()
-		.min(1, { message: "Company Location is required" }),
-	business: z.number().min(1, { message: "Business is required" }),
-	number_of_employees: z
-		.number()
-		.min(1, { message: "Number of Employee is required" }),
-});
+const schemaRegister = z
+	.object({
+		name: z
+			.string()
+			.min(5, { message: "Name is required and at least 5 character" }),
+		email: z
+			.string()
+			.min(5, { message: "Users ID is required" })
+			.email({ message: "Invalid email address" }),
+		password: z
+			.string()
+			.min(6, { message: "Password is Required and have minimum 6 character" }),
+		password_confirmation: z.string().min(6),
+		company_name: z.string().min(1, { message: "Company Name is required" }),
+		company_location: z
+			.number()
+			.min(1, { message: "Company Location is required" }),
+		business: z.number().min(1, { message: "Business is required" }),
+		number_of_employees: z
+			.number()
+			.min(1, { message: "Number of Employee is required" }),
+	})
+	.refine((data) => data.password === data.password_confirmation, {
+		message: "Passwords don't match",
+		path: ["password_confirmation"],
+	});
 
 type SchemaLogin = z.infer<typeof schmaLogin>;
 type SchemaRegister = z.infer<typeof schemaRegister>;
@@ -49,24 +56,25 @@ const Auth: FC = () => {
 	const [registerButton, setRegister] = useState<boolean>(false);
 	const [location, setLocation] = useState<Location[]>([]);
 	const [business, setBusiness] = useState<Business[]>([]);
+
+	const [, setCookies] = useCookies(["userData", "token"]);
+
 	const navigate = useNavigate();
-	function buttonRegister(bool: boolean) {
-		return setRegister(bool);
-	}
 
 	useEffect(() => {
 		fetchLocation();
 		fetchBusiness();
 	}, []);
 
+	function buttonRegister(bool: boolean) {
+		return setRegister(bool);
+	}
+
 	function fetchLocation() {
 		axios
 			.get("location")
 			.then((res) => {
 				const { data } = res.data;
-				// data.map((data: any) => {
-				// 	console.log(data.id, data.name);
-				// });
 				setLocation(data);
 			})
 			.catch((err) => {
@@ -101,13 +109,11 @@ const Auth: FC = () => {
 			});
 	}
 
-	const onSubmit: SubmitHandler<SchemaLogin> = (data) => {
-		alert(JSON.stringify(data));
-		console.log(location);
+	const onSubmit: SubmitHandler<SchemaLogin> = (dataz) => {
 		axios
-			.post("login", data)
+			.post("login", dataz)
 			.then((res) => {
-				const { message } = res.data;
+				const { data, message } = res.data;
 				Swal.fire({
 					icon: "success",
 					title: "Success ",
@@ -115,6 +121,9 @@ const Auth: FC = () => {
 					showCancelButton: false,
 				}).then((result) => {
 					if (result.isConfirmed) {
+						console.log(data.user);
+						setCookies("userData", data.user);
+						setCookies("token", data.token);
 						navigate("/");
 					}
 				});
@@ -131,8 +140,6 @@ const Auth: FC = () => {
 	};
 
 	const onSubmitRegister: SubmitHandler<SchemaRegister> = (data) => {
-		alert(JSON.stringify(data));
-		console.log(data);
 		axios
 			.post("register", data)
 			.then((res) => {
@@ -142,12 +149,12 @@ const Auth: FC = () => {
 					title: "Success ",
 					text: message,
 					showCancelButton: false,
-				});
+				}).finally(() => navigate("/auth"));
 			})
 			.catch((error) => {
 				const errorMessage = error.response.data.error.message;
 				Swal.fire({
-					icon: "success",
+					icon: "error",
 					title: "Failed",
 					text: errorMessage,
 					showCancelButton: false,
@@ -238,6 +245,7 @@ const Auth: FC = () => {
 					type="password"
 					placeholder="Re enter your Password"
 				/>
+
 				<Input
 					register={register}
 					name="company_name"
@@ -303,7 +311,7 @@ const Auth: FC = () => {
 									</button>
 									<button
 										className=" py-2 transition-all w-full text-white"
-										onClick={(event) => buttonRegister(true)}
+										onClick={() => buttonRegister(true)}
 									>
 										Register
 									</button>
@@ -312,7 +320,7 @@ const Auth: FC = () => {
 								<div className=" flex flex-row bg-@based justify-around items-center p-2 rounded-3xl w-2/3">
 									<button
 										className=" py-2 transition-all w-full text-white"
-										onClick={(event) => buttonRegister(false)}
+										onClick={() => buttonRegister(false)}
 									>
 										Login
 									</button>

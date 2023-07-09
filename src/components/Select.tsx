@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-mixed-spaces-and-tabs */
+import { FC, SelectHTMLAttributes } from "react";
+
 import Business from "@/utils/types/Business";
 import Location from "@/utils/types/Location";
-import { FC, SelectHTMLAttributes } from "react";
 
 interface selectType extends SelectHTMLAttributes<HTMLInputElement> {
 	label: string;

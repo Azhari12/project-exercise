@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FC, InputHTMLAttributes } from "react";
 
 interface inputType extends InputHTMLAttributes<HTMLInputElement> {
@@ -9,7 +10,7 @@ interface inputType extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input: FC<inputType> = (props) => {
-	const { placeholder, label, register, valueAsNumber, name, errors } = props;
+	const { label, register, valueAsNumber, name, errors } = props;
 	return (
 		<div className="form-control w-full min-w-xs">
 			<label className="label">

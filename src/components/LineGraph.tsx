@@ -8,7 +8,7 @@ interface Props {
 }
 
 const LineGraph: FC<Props> = (props) => {
-	const { color, data, lineColor } = props;
+	const { color, data } = props;
 
 	const config = {
 		height: 30,
