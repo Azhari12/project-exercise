@@ -11,6 +11,7 @@ import { Layout, Menu } from "antd";
 import Attendance from "./Attendance";
 import Schedule from "./Schedule";
 import Home from "./Home";
+import Swal from "sweetalert2";
 
 const { Content, Sider } = Layout;
 
@@ -53,9 +54,20 @@ const Main: FC = () => {
 	};
 
 	const logout = () => {
-		removeCookies("token");
-		removeCookies("userData");
-		navigate("/");
+		Swal.fire({
+			title: "Are you sure?",
+			text: `You will logout from this App`,
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: `Logout`,
+			cancelButtonText: "Cancel",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				removeCookies("token");
+				removeCookies("userData");
+				navigate("/");
+			}
+		});
 	};
 	return (
 		<div data-theme="light" className="min-w-[1000px]">
